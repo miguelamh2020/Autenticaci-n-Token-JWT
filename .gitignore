@@ -1,0 +1,19 @@
+# Ignorar carpetas de configuración de IntelliJ IDEA
+.idea/
+*.iml
+
+# Ignorar carpetas y archivos generados por Maven
+/target/
+
+# Ignorar configuraciones específicas del sistema
+*.log
+*.class
+*.tmp
+*.bak
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Ignorar otros archivos no relevantes
+HELP.md
