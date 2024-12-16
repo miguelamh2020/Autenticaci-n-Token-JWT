@@ -24,8 +24,8 @@ public class JwtGenerator {
 		Claims claims = Jwts.claims()
 				.setSubject(jwtUser.getUserName())
 				.setId(tokenId)
-				.setIssuedAt(issuedAt)
-				.setExpiration(expirationDate);
+				.setIssuedAt(issuedAt)/*Retirar si no quiere q haya tiempo de expiracion*/
+				.setExpiration(expirationDate);/*Retirar si no quiere q haya tiempo de expiracion*/
 
 		claims.put(Constants.USER_ID, String.valueOf(jwtUser.getId()));
 		claims.put(Constants.ROLE, jwtUser.getRole());
