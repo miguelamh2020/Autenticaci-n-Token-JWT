@@ -41,19 +41,23 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
 		filter.setAuthenticationSuccessHandler(new JwtSuccessHandler());
 		return filter;
 	}
-	
-	@Override
-	protected void configure(HttpSecurity http) throws Exception{
-		http.csrf().disable()
-		.authorizeRequests().antMatchers("**/api/**").authenticated()
-		.and()
-		.exceptionHandling().authenticationEntryPoint(entryPoint)
-		.and()
-		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		
-		http.addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-		http.headers().cacheControl();
 
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.csrf().disable()
+				.authorizeRequests()
+				.antMatchers("**/api/**").authenticated()
+				.and()
+				.exceptionHandling()
+				.authenticationEntryPoint(entryPoint)
+				.and()
+				.sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+		http.addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
-	
+
+
+
+
 }

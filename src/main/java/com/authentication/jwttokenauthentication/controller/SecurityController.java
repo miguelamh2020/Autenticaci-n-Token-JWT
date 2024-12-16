@@ -17,8 +17,10 @@ public class SecurityController {
 	public ResponseEntity<?> getInformacionBancaria(){
 		List<String> movimientosBancarios = obtenerUltimosMovimientosBancarios();
 		if(movimientosBancarios != null) {
+			System.out.println("Paso 1");
 			return new ResponseEntity<>(movimientosBancarios, HttpStatus.OK);
 		}else {
+			System.out.println("Paso 2");
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}

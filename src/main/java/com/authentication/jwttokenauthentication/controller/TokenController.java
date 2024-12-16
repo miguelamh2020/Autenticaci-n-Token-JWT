@@ -2,6 +2,8 @@ package com.authentication.jwttokenauthentication.controller;
 
 import com.authentication.jwttokenauthentication.model.JwtUser;
 import com.authentication.jwttokenauthentication.model.Login;
+import com.authentication.jwttokenauthentication.model.UserToken;
+import com.authentication.jwttokenauthentication.repository.TokenRepository;
 import com.authentication.jwttokenauthentication.security.JwtGenerator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,35 +18,44 @@ import java.util.List;
 @RestController
 @RequestMapping("/token")
 public class TokenController {
-	
-	private JwtGenerator jwtGenerator;
-	
-	public TokenController(JwtGenerator jwtGenerator) {
+
+	private final JwtGenerator jwtGenerator;
+	private final TokenRepository tokenRepository;
+
+	public TokenController(JwtGenerator jwtGenerator, TokenRepository tokenRepository) {
 		this.jwtGenerator = jwtGenerator;
+		this.tokenRepository = tokenRepository;
 	}
-	
+
 	@PostMapping
-	public ResponseEntity<?> generate(@RequestBody final Login login){
-		JwtUser jwtUser = new JwtUser();
-		jwtUser = existUser(login);
-		if(jwtUser != null) {
+	public ResponseEntity<?> generate(@RequestBody final Login login) {
+		JwtUser jwtUser = existUser(login);
+		if (jwtUser != null) {
+			String token = jwtGenerator.generate(jwtUser);
+
+			// Guardar el token en la base de datos
+			UserToken userToken = new UserToken();
+			userToken.setUserId(jwtUser.getId());
+			userToken.setToken(token);
+			tokenRepository.save(userToken);
+
 			List<String> lista = new ArrayList<>();
-			lista.add(jwtGenerator.generate(jwtUser));
-			return new ResponseEntity<List<String>>(lista, HttpStatus.OK);
-		}else {
+			lista.add(token);
+			return new ResponseEntity<>(lista, HttpStatus.OK);
+		} else {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 	}
 
 	private JwtUser existUser(Login login) {
-		if(login.getUser().equals("alberto") && login.getPassword().equals("1234")) {
+		if (login.getUser().equals("alberto") && login.getPassword().equals("1234")) {
 			JwtUser jwtUser = new JwtUser();
 			jwtUser.setUserName(login.getUser());
-			jwtUser.setId(1);
+			jwtUser.setId(1L);
 			jwtUser.setRole("Admin");
 			return jwtUser;
-			
-		}else {
+
+		} else {
 			return null;
 		}
 	}

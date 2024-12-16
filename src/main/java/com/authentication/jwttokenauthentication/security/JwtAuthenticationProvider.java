@@ -17,41 +17,38 @@ import java.util.List;
 @Component
 public class JwtAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
-	@Autowired 
+	@Autowired
 	private JwtValidator validator;
-	
-	@Override
-	protected void additionalAuthenticationChecks(UserDetails userDetails,
-			UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication)
 			throws AuthenticationException {
-		
-		JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken)authentication;
+
+		JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
 		String token = jwtAuthenticationToken.getToken();
-		JwtUser jwtUser = validator.validate(token);
-		
-		if(jwtUser == null) {
-			throw new RuntimeException("Jwt es incorrecto");
+		JwtUser jwtUser;
+
+		try {
+			jwtUser = validator.validate(token);
+		} catch (RuntimeException e) {
+			throw new AuthenticationException(e.getMessage()) {};
 		}
-		
+
 		List<GrantedAuthority> grantedAuthorities = AuthorityUtils
 				.commaSeparatedStringToAuthorityList(jwtUser.getRole());
-		
+
 		return new JwtUserDetails(jwtUser.getUserName(), jwtUser.getId(), token, grantedAuthorities);
-	
 	}
 
 	@Override
 	public boolean supports(Class<?> authentication) {
-		
 		return (JwtAuthenticationToken.class.isAssignableFrom(authentication));
 	}
-	
-	
 
+	@Override
+	protected void additionalAuthenticationChecks(UserDetails userDetails,
+												  UsernamePasswordAuthenticationToken authentication)
+			throws AuthenticationException {
+		// No necesitamos lógica aquí
+	}
 }
